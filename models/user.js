@@ -4,21 +4,39 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    minlength: 5,
+    minlength: 3,
     unique: true
   },
-  name: String,
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+  },
+  name: {
+    type: String,
+    required: true,
+    minlength: 2
+  },
   passwordHash: {
     type: String,
     required: true,
     minlength: 3
   },
-  blogs: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Blog'
-    }
-  ],
+  profiles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile'
+  }],
+  likedProfiles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile'
+  }],
+  dislikedProfiles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile'
+  }]
+}, {
+  timestamps: true
 })
 
 userSchema.set('toJSON', {
@@ -26,7 +44,6 @@ userSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
-    // el passwordHash no debe mostrarse
     delete returnedObject.passwordHash
   }
 })

@@ -2,12 +2,11 @@ const config = require('./utils/config')
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const blogsRouter = require('./controllers/blogs')
-const usersRouter = require('./controllers/users')
-const loginRouter = require('./controllers/login')
+const profilesRouter = require('./controllers/profiles')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
+const path = require('path')
 
 mongoose.set('strictQuery', false)
 
@@ -24,11 +23,17 @@ mongoose.connect(config.MONGODB_URI)
 app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)
-app.use(middleware.tokenExtractor)
 
-app.use('/api/blogs', blogsRouter)
-app.use('/api/users', usersRouter)
-app.use('/api/login', loginRouter)
+// Servir archivos estáticos
+app.use(express.static('public'))
+
+// Rutas de la API
+app.use('/api/profiles', profilesRouter)
+
+// Ruta principal
+app.get('/', (request, response) => {
+  response.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
